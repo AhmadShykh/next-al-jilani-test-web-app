@@ -1,28 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import {UserStatus } from '@prisma/client/wasm'
+import { UserStatus } from '@prisma/client/wasm'
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findByVerificationToken(token: string) {
-    return this.prisma.user.findFirst({
-      where: { verificationToken: token },
-    });
-  }
 
   async activateUser(id: string) {
     return this.prisma.user.update({
       where: { id },
       data: {
         status: UserStatus.ACTIVE,
-        verificationToken: null,
-        tokenExpiry: null,
       },
     });
   }
@@ -32,10 +25,26 @@ export class UserService {
     email: string;
     phoneNumber: string;
     password: string;
-    verificationToken: string;
-    tokenExpiry: Date;
   }) {
     return this.prisma.user.create({ data });
+  }
+
+  async updatePassword(userId: string, hashedPassword: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+  }
+
+  async getAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        name: true,
+        email: true,
+        phoneNumber: true,
+        createdAt: true,
+      },
+    });
   }
 
   async getUserById(id: string) {

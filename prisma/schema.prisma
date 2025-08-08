@@ -14,10 +14,8 @@ model User {
   phoneNumber       String
   password          String
   status            UserStatus @default(PENDING)
-  verificationToken String?
-  tokenExpiry       DateTime?
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  createdAt         DateTime   @default(now()) @db.Timestamptz(6)
+
 }
 
 enum UserStatus {

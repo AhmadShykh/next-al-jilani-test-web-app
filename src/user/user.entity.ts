@@ -19,6 +19,4 @@ export class UserEntity {
     @ApiProperty()
     createdAt!: Date ;
 
-    @ApiProperty()
-    updatedAt!: Date;
 }
